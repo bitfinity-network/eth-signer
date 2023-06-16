@@ -10,7 +10,8 @@ name = "eth-signer"
 repository = "https://github.com/infinity-swap/eth-signer"
 version = "0.2.0"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[features]
+ic_sign = ["ic-canister", "ic-exports"]
 
 [dependencies]
 async-trait = "0.1"
@@ -19,6 +20,10 @@ ethers-core = { git = "https://github.com/infinity-swap/ethers-rs", default-feat
 hex = "0.4"
 sha2 = "0.10"
 thiserror = "1.0"
+
+ic-exports = { git = "https://github.com/infinity-swap/canister-sdk", tag = "v0.3.54", optional = true }
+ic-canister = { git = "https://github.com/infinity-swap/canister-sdk", tag = "v0.3.54", optional = true }
+candid = "0.8"
 
 [dev-dependencies]
 rand = { version = "0.8", features = ["std_rng", "small_rng"] }

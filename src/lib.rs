@@ -1,5 +1,9 @@
-mod wallet;
 pub use wallet::{Wallet, WalletError};
+
+mod wallet;
+
+#[cfg(feature = "ic_sign")]
+pub mod ic_sign;
 
 /// A wallet instantiated with a locally stored private key
 pub type LocalWallet<'a> = Wallet<'a, ethers_core::k256::ecdsa::SigningKey>;
