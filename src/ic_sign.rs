@@ -1,3 +1,5 @@
+use std::fmt;
+
 use candid::Principal;
 use ethers_core::k256::elliptic_curve::sec1::ToEncodedPoint;
 use ethers_core::k256::PublicKey;
@@ -16,12 +18,38 @@ use thiserror::Error;
 pub enum IcSignerError {
     #[error("IC failed to sign data with rejection code {0:?}: {1}")]
     SigningFailed(RejectionCode, String),
+
     #[error("from address is not specified in transaction")]
     FromAdderessNotPresent,
+
     #[error("invalid public key")]
     InvalidPublicKey,
+
     #[error(transparent)]
     SignatureError(#[from] SignatureError),
+}
+
+/// Signing key which will be used by management canister.
+#[derive(Debug, Clone, Copy)]
+pub enum SigningKeyId {
+    /// A default key ID that is used in deploying to a local version of IC (via DFX).
+    Dfx,
+
+    /// A master test key ID that is used on the mainnet.
+    Test,
+
+    /// A master production key ID that is used on the mainnet.
+    Production,
+}
+
+impl fmt::Display for SigningKeyId {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            SigningKeyId::Dfx => write!(f, "dfx_test_key"),
+            SigningKeyId::Test => write!(f, "test_key_1"),
+            SigningKeyId::Production => write!(f, "key_1"),
+        }
+    }
 }
 
 pub struct IcSigner;
@@ -31,15 +59,16 @@ impl IcSigner {
     pub async fn sign_transaction(
         &self,
         tx: &TypedTransaction,
+        key_id: SigningKeyId,
         derivation_path: DerivationPath,
     ) -> Result<Signature, IcSignerError> {
         let hash = tx.sighash();
-        let hash_bytes = hash.as_fixed_bytes();
+        let hash_bytes = hash.as_fixed_bytes(); 
 
         let request = SignWithECDSAArgs {
             key_id: EcdsaKeyId {
                 curve: EcdsaCurve::Secp256k1,
-                name: "dfx_test_key".into(),
+                name: key_id.to_string(),
             },
             message_hash: *hash_bytes,
             derivation_path,
@@ -80,6 +109,7 @@ impl IcSigner {
     /// Returns public key for current canister from IC.
     pub async fn public_key(
         &self,
+        key_id: SigningKeyId,
         derivation_path: DerivationPath,
     ) -> Result<Vec<u8>, IcSignerError> {
         let request = ECDSAPublicKeyArgs {
@@ -87,7 +117,7 @@ impl IcSigner {
             derivation_path,
             key_id: EcdsaKeyId {
                 curve: EcdsaCurve::Secp256k1,
-                name: "dfx_test_key".into(),
+                name: key_id.to_string(),
             },
         };
         virtual_canister_call!(
@@ -132,6 +162,7 @@ mod tests {
 
     use super::IcSigner;
     use crate::Wallet;
+    use crate::ic_sign::SigningKeyId;
 
     fn init_context() -> Wallet<'static, SigningKey> {
         MockContext::new().inject();
@@ -180,10 +211,10 @@ mod tests {
             .into();
 
         let signature = IcSigner
-            .sign_transaction(&tx, DerivationPath::new(vec![]))
+            .sign_transaction(&tx, SigningKeyId::Dfx, DerivationPath::new(vec![]))
             .await
             .unwrap();
-        dbg!(signature.v);
+        
         let recovered_from = signature.recover(tx.sighash()).unwrap();
         assert_eq!(recovered_from, from);
     }
