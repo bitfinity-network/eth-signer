@@ -21,7 +21,7 @@ hex = "0.4"
 sha2 = "0.10"
 thiserror = "1.0"
 
-# 
+# Dependencies for ic-siginig
 ic-exports = { git = "https://github.com/infinity-swap/canister-sdk", tag = "v0.3.54", optional = true }
 ic-canister = { git = "https://github.com/infinity-swap/canister-sdk", tag = "v0.3.54", optional = true }
 candid = { version = "0.8", optional = true }
