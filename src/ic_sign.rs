@@ -63,7 +63,7 @@ impl IcSigner {
         derivation_path: DerivationPath,
     ) -> Result<Signature, IcSignerError> {
         let hash = tx.sighash();
-        let hash_bytes = hash.as_fixed_bytes(); 
+        let hash_bytes = hash.as_fixed_bytes();
 
         let request = SignWithECDSAArgs {
             key_id: EcdsaKeyId {
@@ -161,8 +161,8 @@ mod tests {
     use ic_exports::ic_kit::MockContext;
 
     use super::IcSigner;
-    use crate::Wallet;
     use crate::ic_sign::SigningKeyId;
+    use crate::Wallet;
 
     fn init_context() -> Wallet<'static, SigningKey> {
         MockContext::new().inject();
@@ -214,7 +214,7 @@ mod tests {
             .sign_transaction(&tx, SigningKeyId::Dfx, DerivationPath::new(vec![]))
             .await
             .unwrap();
-        
+
         let recovered_from = signature.recover(tx.sighash()).unwrap();
         assert_eq!(recovered_from, from);
     }
