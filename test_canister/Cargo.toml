@@ -1,0 +1,16 @@
+[package]
+name = "test_canister"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+default = []
+export-api = []
+
+
+[dependencies]
+candid = "0.8"
+eth-signer = { path = "../", features = ["ic_sign"] }
+ic-exports = { git = "https://github.com/infinity-swap/canister-sdk", tag = "v0.3.54" }
+ic-canister = { git = "https://github.com/infinity-swap/canister-sdk", tag = "v0.3.54" }
+ethers-core = { git = "https://github.com/infinity-swap/ethers-rs", default-features = false, package = "ethers-core", branch = "evmc_fork" }
