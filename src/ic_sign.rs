@@ -42,6 +42,12 @@ pub enum SigningKeyId {
     Production,
 }
 
+///There are three key options:
+/// - dfx_test_key: a default key ID that is used in deploying to a local version of IC (via IC SDK).
+/// - test_key_1: a master test key ID that is used on the mainnet.
+/// - key_1: a master production key ID that is used on the mainnet. 
+/// 
+/// Source: https://internetcomputer.org/docs/current/samples/t-ecdsa-sample#update-source-code-with-the-right-key-id
 impl fmt::Display for SigningKeyId {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
