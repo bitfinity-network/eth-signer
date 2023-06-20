@@ -8,7 +8,7 @@ include = ["src/**/*", "LICENSE", "README.md"]
 license = "MIT"
 name = "eth-signer"
 repository = "https://github.com/infinity-swap/eth-signer"
-version = "0.2.1"
+version = "0.3.0"
 
 [features]
 ic_sign = ["ic-canister", "ic-exports", "candid"]
