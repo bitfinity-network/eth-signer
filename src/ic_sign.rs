@@ -87,6 +87,7 @@ impl IcSigner {
         let s = ethers_core::types::U256::from_big_endian(&signature_data[32..64]);
 
         // IC doesn't support recovery id signature parameter, so set it manually.
+        // Details: https://eips.ethereum.org/EIPS/eip-155.
         let v = match &tx {
             TypedTransaction::Legacy(_) => tx.chain_id().unwrap_or_default().as_u64() * 2 + 35u64,
             _ => 0,
